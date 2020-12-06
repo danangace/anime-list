@@ -1,5 +1,4 @@
 const { Schema, model } = require('mongoose');
-const { isUsernameUnique, isEmailUnique } = require('../helpers/validateUser')
 const { hashPassword } = require('../helpers/password')
 
 // define schema
@@ -34,7 +33,23 @@ const userSchema = new Schema({
     type: Boolean,
     default: false
   }
+},
+{
+  versionKey: false,
+  timestamps: true
 })
+
+function isUsernameUnique (value) {
+  return User.findOne({ username: value }).then(found => {
+    return found ? false : true
+  })
+}
+
+function isEmailUnique (value) {
+  return User.findOne({ email: value }).then(found => {
+    return found ? false : true
+  })
+}
 
 // hash password
 userSchema.pre('save', function (next) {
